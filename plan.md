@@ -28,3 +28,186 @@
 7. **Отчет для руководства:**
    - Удобный дашборд с ключевыми метриками (риск профиля сотрудника, общее состояние информационной безопасности).
    
+### Подробный план разработки, разделённый по этапам
+
+#### Этап 1: Анализ и проектирование
+1. **Определение требований**:
+   - Провести анализ потребностей: целевая аудитория, цели, функционал.
+   - Согласовать требования:
+     - Генерация сценариев атак.
+     - Отчёты по результатам.
+     - Аутентификация и безопасность.
+
+2. **Проектирование архитектуры**:
+   - Определить архитектурный стиль: многослойная архитектура (Frontend, API, Database).
+   - Разработать модели данных:
+     - Пользователи (User).
+     - Сценарии (Scenario).
+     - Результаты тестов (TestResult).
+
+3. **Техническое планирование**:
+   - Бэкенд:
+     - ASP.NET Core Web API.
+     - Entity Framework Core.
+   - Фронтенд:
+     - Blazor или React.
+   - База данных:
+     - SQL Server/PostgreSQL.
+   - Интеграции:
+     - SMTP (почта), REST API (новости, данные для сценариев).
+
+4. **Создание плана тестирования**:
+   - Обозначить тестовые сценарии (юнит, интеграционные, функциональные тесты).
+
+---
+
+#### Этап 2: Базовая инфраструктура
+1. **Создание репозитория**:
+   - Настроить Git-репозиторий и CI/CD (GitHub Actions/Azure DevOps).
+
+2. **Настройка проекта**:
+   - Инициализация ASP.NET Core API:
+     ```bash
+     dotnet new webapi -n SocialEngineeringTester
+     ```
+   - Добавление Blazor или отдельного React-фронтенда.
+
+3. **Настройка базы данных**:
+   - Подключить Entity Framework Core.
+   - Настроить миграции для автоматического создания схемы.
+
+4. **Создание базовых моделей**:
+   - Реализация классов для пользователей и сценариев:
+     ```csharp
+     public class User
+     {
+         public int Id { get; set; }
+         public string Name { get; set; }
+         public string Email { get; set; }
+         public string Role { get; set; } // Admin, Employee
+     }
+
+     public class Scenario
+     {
+         public int Id { get; set; }
+         public string Description { get; set; }
+         public DateTime CreatedAt { get; set; }
+     }
+     ```
+
+5. **Начальная интеграция API**:
+   - Реализация базового API для CRUD операций.
+
+---
+
+#### Этап 3: Основной функционал
+1. **Модуль генерации сценариев**:
+   - Создать сервис для динамической генерации сценариев:
+     ```csharp
+     public interface IScenarioService
+     {
+         Task<List<Scenario>> GenerateScenariosAsync(int userId);
+     }
+
+     public class ScenarioService : IScenarioService
+     {
+         public async Task<List<Scenario>> GenerateScenariosAsync(int userId)
+         {
+             // Генерация сценариев на основе профиля пользователя
+             return new List<Scenario>
+             {
+                 new Scenario { Description = "Phishing email simulation" },
+                 new Scenario { Description = "Fake support call" }
+             };
+         }
+     }
+     ```
+
+2. **Аналитика и отчёты**:
+   - Создать сервис аналитики:
+     ```csharp
+     public interface IAnalyticsService
+     {
+         Task LogUserAction(int userId, string action);
+         Task<Report> GenerateReportAsync(int userId);
+     }
+     ```
+   - Генерация отчётов в PDF или Excel.
+
+3. **Интерактивное тестирование**:
+   - Реализовать API для тестов:
+     ```csharp
+     [HttpPost("start-test")]
+     public async Task<IActionResult> StartTest([FromBody] TestRequest request)
+     {
+         var result = await _testService.StartTestAsync(request.UserId);
+         return Ok(result);
+     }
+     ```
+
+4. **Безопасность**:
+   - Реализовать регистрацию и аутентификацию через JWT.
+   - Настроить авторизацию на основе ролей (Policy-based).
+
+---
+
+#### Этап 4: Пользовательский интерфейс
+1. **Фронтенд:**
+   - Базовая структура интерфейса:
+     - Страница логина.
+     - Страница тестирования.
+     - Дашборд с отчётами.
+   - Компоненты:
+     - Форма для прохождения теста.
+     - Динамическое отображение сценариев.
+   - Пример страницы на Blazor:
+     ```razor
+     @page "/test"
+     <h3>Test Page</h3>
+     <ul>
+         @foreach (var scenario in Scenarios)
+         {
+             <li>@scenario.Description</li>
+         }
+     </ul>
+     @code {
+         private List<Scenario> Scenarios = new();
+         protected override async Task OnInitializedAsync()
+         {
+             Scenarios = await Http.GetFromJsonAsync<List<Scenario>>("api/scenario/1");
+         }
+     }
+     ```
+
+2. **Дизайн и юзабилити**:
+   - Использование библиотек для улучшения дизайна (Bootstrap, TailwindCSS).
+
+---
+
+#### Этап 5: Тестирование
+1. **Юнит-тесты**:
+   - Тестирование бизнес-логики (сервисы, генерация сценариев).
+
+2. **Интеграционные тесты**:
+   - Проверка взаимодействия API и базы данных.
+
+3. **Тестирование фронтенда**:
+   - Использование Cypress для UI-тестов.
+
+4. **Нагрузочное тестирование**:
+   - Использование инструментов, таких как k6 или Apache JMeter.
+
+---
+
+#### Этап 6: Внедрение и поддержка
+1. **Деплой**:
+   - Настройка сервера (IIS или Docker).
+   - Конфигурация CI/CD.
+
+2. **Обучение и обратная связь**:
+   - Создание документации (руководства для пользователей).
+   - Сбор отзывов от тестовых пользователей.
+
+3. **Поддержка и обновления**:
+   - Регулярное добавление новых сценариев атак.
+   - Улучшение системы аналитики и отчётов.
