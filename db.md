@@ -35,7 +35,7 @@
 | `ScenarioId`  | INT          | Ссылка на сценарий (FK к `Scenarios.Id`). |
 | `StartedAt`   | DATETIME     | Время начала теста.                 |
 | `CompletedAt` | DATETIME     | Время завершения теста.             |
-| `IsPassed`    | BIT          | Пройден ли тест (true/false).       |
+| `IsPassed`    | INT          | Результат тестирования.       |
 
 ---
 
